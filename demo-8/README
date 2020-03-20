@@ -1,0 +1,3 @@
+In This Demo we are going to create a VPC, 2 subnets(1 private and 1 public), Internet Gateway
+Associate IG with  and associate gateway with route table 
+create a ec2 instance within public subnet and private subnet to check the internet connectivity

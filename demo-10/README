@@ -1,0 +1,1 @@
+This demo is about assigning Elastic Public IP to an Instance and then creating Route53 DNS zone and assing it to the elastic IP

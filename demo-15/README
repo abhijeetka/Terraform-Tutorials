@@ -1,0 +1,13 @@
+THis demo is for showing the autoscaling group
+
+Things that we need to create in this demo
+1. vpc
+2. 2 public subnet
+3. Internet Gateway
+4. Route Table
+5. Assocaite Route Table to subent
+6. create autoscaling group
+7. create autoscaling_instance config
+8. create autoscaling policies
+9. create cloudwatch alarms
+10. creaet elb

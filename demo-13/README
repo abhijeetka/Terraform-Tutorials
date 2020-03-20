@@ -1,0 +1,1 @@
+This is an example where we are creating a role and assing policy to this role and after that we are attaching this role to our aws instance

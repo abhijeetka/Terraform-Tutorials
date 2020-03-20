@@ -1,0 +1,9 @@
+THis demo is for showing the autoscaling group
+
+Things that we need to create in this demo
+1. vpc
+2. 2 public subnet
+3. Internet Gateway
+4. Route Table
+5. Assocaite Route Table to subent
+6. security Group for ssh on port 22
