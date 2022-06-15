@@ -68,28 +68,28 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 # Create EBS Volume
-resource "aws_ebs_volume" "ebs_vol_test" {
-  availability_zone = "us-west-1c"
-  size              = 10
-  type              = "gp2"
-  tags = {
-    Name = "ebs-test-vol"
-  }
-}
+#resource "aws_ebs_volume" "ebs_vol_test" {
+#  availability_zone = "us-west-1c"
+#  size              = 10
+#  type              = "gp2"
+#  tags = {
+#    Name = "ebs-test-vol"
+ # }
+#}
 
-resource "aws_volume_attachment" "ebs_vol_test_attach" {
-  device_name = "/dev/xvdh"
-  volume_id   = aws_ebs_volume.ebs_vol_test.id
-  instance_id = aws_instance.vpc_test.id
-}
+#resource "aws_volume_attachment" "ebs_vol_test_attach" {
+#  device_name = "/dev/xvdh"
+#  volume_id   = aws_ebs_volume.ebs_vol_test.id
+ # instance_id = aws_instance.vpc_test.id
+#}
 
-resource "aws_instance" "vpc_test" {
-  ami                    = "ami-03ba3948f6c37a4b0"
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.main_public.id
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
-  key_name               = "nginx"
-}
+#resource "aws_instance" "vpc_test" {
+#  ami                    = "ami-03ba3948f6c37a4b0"
+#  instance_type          = var.instance_type
+#  subnet_id              = aws_subnet.main_public.id
+#  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+#  key_name               = "nginx"
+#}
 
 
 
