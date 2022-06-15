@@ -1,10 +1,10 @@
-resource "aws_instance" "example" {
-  ami                    = "ami-03ba3948f6c37a4b0"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
-  subnet_id              = aws_subnet.main_public.id
-  key_name               = "nginx"
-}
+#resource "aws_instance" "example" {
+# ami                    = "ami-03ba3948f6c37a4b0"
+#  instance_type          = "t2.micro"
+#  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+#  subnet_id              = aws_subnet.main_public.id
+#  key_name               = "nginx"
+#}
 
 resource "aws_internet_gateway" "ig_main" {
   vpc_id = aws_vpc.main.id
