@@ -1,5 +1,5 @@
 resource "aws_launch_configuration" "ec2_launch_configuration" {
-  image_id                    = "ami-03ba3948f6c37a4b0"
+  image_id                    = "ami-052efd3df9dad4825"
   instance_type               = "t2.micro"
   key_name                    = "nginx"
   security_groups             = [aws_security_group.allow_ssh.id, aws_security_group.allow_http.id ]

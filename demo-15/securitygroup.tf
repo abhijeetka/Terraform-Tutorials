@@ -1,6 +1,6 @@
 resource "aws_security_group" "allow_ssh" {
   vpc_id = aws_vpc.main.id
-  name   = "allow-ssh"
+  name   = "allow-ssh-cli"
 
   ingress {
     from_port   = 22
@@ -19,7 +19,7 @@ resource "aws_security_group" "allow_ssh" {
 
 resource "aws_security_group" "allow_http" {
   vpc_id = aws_vpc.main.id
-  name   = "allow-http"
+  name   = "allow-http-cli"
 
   ingress {
     from_port   = 80

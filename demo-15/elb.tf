@@ -1,5 +1,5 @@
 resource "aws_elb" "my_elb" {
-  name            = "my-elb"
+  name            = "my-elb-cli"
   subnets         = [aws_subnet.main_public_1.id, aws_subnet.main_public_2.id]
   security_groups = [aws_security_group.allow_http.id]
   #instances       = [ aws_autoscaling_group.ec2_autoscaling_group.id ]
