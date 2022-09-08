@@ -41,7 +41,7 @@ variable "instance_name" {
 }
 variable "elb_name" {
   description = "elb_name"
-  default = "terraform-iac-default-elb-name"
+  default = "tf-iac-elb"
 }
 variable "sg_name" {
   description = "sg_name"
@@ -75,5 +75,5 @@ variable "assume_role_name" {
 }
 
 variable "environment" {
-  defualt = "dev"
+  default = "dev"
 }

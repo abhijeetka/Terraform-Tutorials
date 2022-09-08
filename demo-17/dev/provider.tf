@@ -6,6 +6,13 @@ terraform {
       version = "~>3.0"
     }
   }
+  cloud {
+        organization = "abhijeetka"
+    #
+        workspaces {
+          name = "tf-demo-dev"
+        }
+  }
 }
 
 
