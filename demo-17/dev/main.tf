@@ -25,6 +25,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.default.id
   cidr_block              = var.subnet_range_public
   map_public_ip_on_launch = true
+  availability_zone = "us-east-1a"
 
   tags = {
     Name = "${var.subnet_name}-${var.environment}"
@@ -36,6 +37,7 @@ resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.default.id
   cidr_block              = var.subnet_range_private
   map_public_ip_on_launch = false
+  availability_zone = "us-east-1b"
 
   tags = {
     Name = "${var.subnet_name}-${var.environment}"
