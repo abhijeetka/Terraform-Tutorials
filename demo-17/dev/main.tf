@@ -21,10 +21,21 @@ resource "aws_route" "internet_access" {
 }
 
 # Create a subnet to launch our instances into
-resource "aws_subnet" "default" {
+resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.default.id
-  cidr_block              = var.subnet_range
+  cidr_block              = var.subnet_range_public
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "${var.subnet_name}-${var.environment}"
+  }
+}
+
+# Create a subnet to launch our instances into
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = var.subnet_range_private
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${var.subnet_name}-${var.environment}"
@@ -89,7 +100,7 @@ resource "aws_security_group" "default" {
 resource "aws_elb" "web" {
   name = "${var.elb_name}-${var.environment}"
 
-  subnets         = [aws_subnet.default.id]
+  subnets         = [aws_subnet.private.id]
   security_groups = [aws_security_group.elb.id]
   instances       = [aws_instance.web.id]
 
@@ -136,7 +147,7 @@ resource "aws_instance" "web" {
   # We're going to launch into the same subnet as our ELB. In a production
   # environment it's more common to have a separate private subnet for
   # backend instances.
-  subnet_id = aws_subnet.default.id
+  subnet_id = aws_subnet.private.id
 
   # We run a remote provisioner on the instance after creating it.
   # In this case, we just install nginx and start it. By default,

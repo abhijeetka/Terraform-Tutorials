@@ -65,9 +65,14 @@ variable "vpc_cidr" {
 }
 
 
-variable "subnet_range" {
+variable "subnet_range_public" {
   description = "vpc_cidr"
   default = "10.1.1.0/24"
+}
+
+variable "subnet_range_private" {
+  description = "vpc_cidr"
+  default = "10.1.2.0/24"
 }
 
 variable "assume_role_name" {
@@ -76,4 +81,8 @@ variable "assume_role_name" {
 
 variable "environment" {
   default = "dev"
+}
+
+variable "cluster_name" {
+  default = "tf-demo"
 }
