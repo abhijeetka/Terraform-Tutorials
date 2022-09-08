@@ -61,13 +61,13 @@ variable "vpc_name" {
 }
 variable "vpc_cidr" {
   description = "vpc_cidr"
-  default = "10.1.0.0/16"
+  default = "10.2.0.0/16"
 }
 
 
 variable "subnet_range" {
   description = "vpc_cidr"
-  default = "10.1.1.0/24"
+  default = "10.2.1.0/24"
 }
 
 variable "assume_role_name" {
