@@ -1,0 +1,13 @@
+{
+  "data": {
+    "type":"vars",
+    "attributes": {
+      "key":"AWS_ACCESS_KEY_ID",
+      "value":"AKIAZEY7AOFP4VWEUVNS",
+      "description":"some description",
+      "category":"terraform",
+      "hcl":false,
+      "sensitive":false
+    }
+  }
+}
