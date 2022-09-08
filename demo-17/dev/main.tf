@@ -161,7 +161,7 @@ resource "aws_instance" "web" {
       "sudo rm /var/lib/apt/lists/lock || true",
       "sudo apt-get -y install nginx",
       "sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin",
-      "sudo service nginx start",
+      "sudo service nginx start"
     ]
   }
 }
