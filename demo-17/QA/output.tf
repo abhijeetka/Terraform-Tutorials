@@ -1,3 +1,3 @@
 output "address" {
-  value = aws_elb.web.dns_name
+  value = module.alb.this_lb_dns_name
 }

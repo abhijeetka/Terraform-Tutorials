@@ -8,6 +8,10 @@ resource "aws_vpc" "default" {
 
 }
 
+locals {
+  name = "${var.service_name}-${var.environment}"
+}
+
 # Create an internet gateway to give our subnet access to the outside world
 resource "aws_internet_gateway" "default" {
   vpc_id = aws_vpc.default.id
@@ -21,10 +25,34 @@ resource "aws_route" "internet_access" {
 }
 
 # Create a subnet to launch our instances into
-resource "aws_subnet" "default" {
+resource "aws_subnet" "public1" {
   vpc_id                  = aws_vpc.default.id
-  cidr_block              = var.subnet_range
+  cidr_block              = var.subnet_range_public-1
   map_public_ip_on_launch = true
+  availability_zone = "us-east-1a"
+
+  tags = {
+    Name = "${var.subnet_name}-${var.environment}"
+  }
+}
+
+resource "aws_subnet" "public2" {
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = var.subnet_range_public-2
+  map_public_ip_on_launch = true
+  availability_zone = "us-east-1b"
+
+  tags = {
+    Name = "${var.subnet_name}-${var.environment}"
+  }
+}
+
+# Create a subnet to launch our instances into
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = var.subnet_range_private
+  map_public_ip_on_launch = false
+  availability_zone = "us-east-1b"
 
   tags = {
     Name = "${var.subnet_name}-${var.environment}"
@@ -86,69 +114,100 @@ resource "aws_security_group" "default" {
   }
 }
 
-resource "aws_elb" "web" {
-  name = "${var.elb_name}-${var.environment}"
-
-  subnets         = [aws_subnet.default.id]
-  security_groups = [aws_security_group.elb.id]
-  instances       = [aws_instance.web.id]
-
-  listener {
-    instance_port     = 80
-    instance_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
-}
 
 resource "aws_key_pair" "auth" {
   key_name   = "${var.key_name}-${var.environment}"
   public_key = file(var.public_key_path)
 }
 
-resource "aws_instance" "web" {
+module "alb" {
+  source  = "terraform-aws-modules/alb/aws"
+  version = "~> 5.0"
+
+  name = "${local.name}-lb"
+
+  load_balancer_type = "application"
+
+  vpc_id          = aws_vpc.default.id
+  subnets         = [aws_subnet.public1.id,aws_subnet.public2.id]
+  security_groups = [aws_security_group.default.id]
+
+
+  target_groups = [
+    {
+      name             = "tg-${local.name}"
+      backend_protocol = "HTTP"
+      backend_port     = 80
+      health_check = {
+        path = "/"
+        port = 80
+        healthy_threshold = 5
+        unhealthy_threshold = 2
+        timeout = 5
+        interval = 15
+        matcher = "200-302"  # has to be HTTP 200 or fails
+      }
+    }
+
+  ]
+
+
+  http_tcp_listeners = [
+    {
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+    }
+  ]
+
+
   tags = {
-    Name = "${var.instance_name}-${var.environment}"
+    Environment = var.environment
   }
-  # The connection block tells our provisioner how to
-  # communicate with the resource (instance)
-  connection {
-    type = "ssh"
-    # The default username for our AMI
-    user = "ubuntu"
-    host = self.public_ip
-    private_key = file(var.private_key_path)
-    # The connection will use the local SSH agent for authentication.
-  }
+}
 
-  instance_type = "t2.micro"
+module "autoscaling" {
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "3.9.0"
+  name = local.name
 
-  # Lookup the correct AMI based on the region
-  # we specified
-  ami = var.aws_amis
+  # Launch configuration
+  key_name = aws_key_pair.auth.key_name
+  lc_name = "${local.name}-lc"
+  associate_public_ip_address  = true
+  image_id        = var.aws_amis
+  instance_type   = var.instance_type
+  security_groups = [aws_security_group.default.id]
 
-  # The name of our SSH keypair we created above.
-  key_name = aws_key_pair.auth.id
+  root_block_device = [
+    {
+      volume_size = "70"
+      volume_type = "gp2"
+    },
+  ]
 
-  # Our Security group to allow HTTP and SSH access
-  vpc_security_group_ids = [aws_security_group.default.id]
+  # Auto scaling group
+  asg_name                  = "${local.name}-asg"
+  vpc_zone_identifier       = [aws_subnet.private.id]
+  health_check_type         = "EC2"
+  min_size                  = 0
+  max_size                  = 1
+  desired_capacity          = 1
+  wait_for_capacity_timeout = 0
 
-  # We're going to launch into the same subnet as our ELB. In a production
-  # environment it's more common to have a separate private subnet for
-  # backend instances.
-  subnet_id = aws_subnet.default.id
-
-  # We run a remote provisioner on the instance after creating it.
-  # In this case, we just install nginx and start it. By default,
-  # this should be on port 80
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get -y update",
-      "sleep 2", 
-      "sudo rm /var/lib/apt/lists/lock || true",
-      "sudo apt-get -y install nginx",
-      "sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin",
-      "sudo service nginx start",
-    ]
-  }
+  tags = [
+    {
+      key                 = "Environment"
+      value               = "${var.environment}"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "Project"
+      value               = "lazsa"
+      propagate_at_launch = true
+    },
+  ]
+  target_group_arns    = module.alb.target_group_arns
+  iam_instance_profile = "ec2-ssm-role"
+  user_data = templatefile("${path.module}/init.tftpl",{})
 }

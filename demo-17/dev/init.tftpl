@@ -1,0 +1,8 @@
+#!/bin/sh
+apt-get update
+apt install -y docker.io
+systemctl daemon-reload;
+systemctl restart docker;
+docker ps ;
+docker run -d -p 80:4000 abhijeetka/golang-webapp:latest
+docker ps;

@@ -61,13 +61,23 @@ variable "vpc_name" {
 }
 variable "vpc_cidr" {
   description = "vpc_cidr"
-  default = "10.2.0.0/16"
+  default = "10.0.0.0/16"
 }
 
 
-variable "subnet_range" {
+variable "subnet_range_public-1" {
   description = "vpc_cidr"
-  default = "10.2.1.0/24"
+  default = "10.0.1.0/24"
+}
+
+variable "subnet_range_public-2" {
+  description = "vpc_cidr"
+  default = "10.0.2.0/24"
+}
+
+variable "subnet_range_private" {
+  description = "vpc_cidr"
+  default = "10.0.3.0/24"
 }
 
 variable "assume_role_name" {
@@ -76,4 +86,12 @@ variable "assume_role_name" {
 
 variable "environment" {
   default = "qa"
+}
+
+variable "service_name" {
+  default = "tf-demo"
+}
+
+variable "instance_type" {
+  default = "t2.medium"
 }

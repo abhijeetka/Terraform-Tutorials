@@ -5,14 +5,19 @@ terraform {
       source  = "hashicorp/aws"
       version = "~>3.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.0.1"
+    }
   }
   cloud {
         organization = "abhijeetka"
-    #
         workspaces {
-          name = "tf-demo-qa"
+          name = "tf-demo-dev"
         }
   }
+
+
 }
 
 
@@ -23,3 +28,4 @@ provider "aws" {
     external_id = "my_external_id"
   }
 }
+
